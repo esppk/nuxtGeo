@@ -1,0 +1,22 @@
+{
+  "name": "NuxtGeo",
+  "version": "1.0.0",
+  "description": "A Nuxt app with geo and auth",
+  "author": "Emrick L",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.0.0",
+    "firebase": "^5.3.1",
+    "nuxt": "^1.0.0",
+    "nuxt-buefy": "^0.0.4"
+  },
+  "devDependencies": {
+    "cross-env": "^5.0.1"
+  }
+}
