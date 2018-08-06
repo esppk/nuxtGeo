@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import firebase from "firebase";
+import db from "@/firebase/init";
 export default {
   name: "GMap",
   data() {
@@ -27,10 +29,73 @@ export default {
         minZoom: 3,
         streetViewControl: false
       });
+
+      db
+        .collection("users")
+        .get()
+        .then(users => {
+          users.docs.forEach(doc => {
+            let data = doc.data();
+            if (data.geolocation) {
+              let marker = new google.maps.Marker({
+                position: {
+                  lat: data.geolocation.lat,
+                  lng: data.geolocation.lng
+                },
+                map
+              });
+              //add click event to marker
+              marker.addListener("click", () => {});
+            }
+          });
+        });
     }
   },
   mounted() {
-    this.$nextTick(this.renderMap);
+    /* this.$nextTick(this.renderMap); */
+    let user = firebase.auth().currentUser;
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          this.lat = pos.coords.latitude;
+          this.lng = pos.coords.longitude;
+          this.renderMap();
+
+          db
+            .collection("users")
+            .where("user_id", "==", user.uid)
+            .get()
+            .then(snapshot => {
+              snapshot.forEach(doc => {
+                db
+                  .collection("users")
+                  .doc(doc.id)
+                  .update({
+                    geolocation: {
+                      lat: pos.coords.latitude,
+                      lng: pos.coords.longitude
+                    }
+                  });
+              });
+            });
+        },
+        err => {
+          this.renderMap();
+        },
+        { maximumAge: 60000, timeout: 3000 }
+      );
+    } else {
+      this.$toast.open({
+        message: "Fail to read GEO info, using default",
+        type: "is-warning"
+      });
+      this.renderMap();
+    }
+
+    firebase.auth().onAuthStateChanged(() => {
+      console.log("firebase.auth().currentUser");
+    });
   }
 };
 </script>

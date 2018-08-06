@@ -19,8 +19,18 @@
           </div>
         </div>
         <div class="navbar-end">
-          <div  v-for="(item, idx) in menuItems" :key="idx" class="navbar-item">
-            {{item}}
+          <div class="navbar-item">
+            <a @click="toSignUp" v-if="!islogin">Sign Up</a>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable" v-if="islogin" >
+            <a class="navbar-link">Welcome {{ user.email }}</a>
+            <div class="navbar-dropdown">
+              <a @click="logout" class="navbar-item">Logout</a>
+            </div>
+          </div>
+
+          <div class="navbar-item" v-if="!islogin">
+            <a @click="toLogIn">LogIn</a>
           </div>
         </div>
       </div>
@@ -32,8 +42,8 @@
         <p class="menu-label is-hidden-touch">navigation</p>
         <ul class="menu-list">
           <li v-for="(item, key) of items" :key="key">
-            <nuxt-link :to="item.to" exact-active-class="is-active">
-              <b-icon :icon="item.icon"/> {{ item.title }}
+            <nuxt-link :to="item.to">
+              {{ item.title }}
             </nuxt-link>
           </li>
         </ul>
@@ -60,6 +70,8 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   data() {
     return {
@@ -67,8 +79,34 @@ export default {
         { title: "Home", icon: "home", to: { name: "index" } },
         { title: "Inspire", icon: "lightbulb", to: { name: "inspire" } }
       ],
-      menuItems: ["Sign Up", "LogIn", "About"]
+      islogin: false,
+      user: null
     };
+  },
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.islogin = true;
+        this.user = user;
+      } else {
+        this.user = false;
+      }
+    });
+  },
+  methods: {
+    async logout() {
+      await firebase.auth().signOut();
+      this.$store.commit("toLogIn");
+      this.$router.push({ name: "inspire" });
+    },
+    toSignUp() {
+      this.$store.commit("toSignUp");
+      this.$router.push({ name: "inspire" });
+    },
+    toLogIn() {
+      this.$store.commit("toLogIn");
+      this.$router.push({ name: "inspire" });
+    }
   }
 };
 </script>

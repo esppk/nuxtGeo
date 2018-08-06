@@ -2,8 +2,7 @@
   <section class="columns">
     <div id="signlog" class="column is-half is-offset-one-quarter">
 
-      <b-field label="Email"     
-          >
+      <b-field label="Email" >
           <b-input type="email"
               v-model="email"
               placeholder="test@gmail.com"
@@ -12,14 +11,13 @@
       </b-field>
       <b-field label="Username"
           :type="isUserOk"
+          v-if="!islogInMode"
           :message="userMsg">
           <b-input maxlength="30"
             v-model="username"
             placeholder="Your username"
           ></b-input>
       </b-field>
-
-      {{slug}}
 
       <b-field label="Password">
           <b-input type="password"
@@ -51,9 +49,16 @@ export default {
       userMsg: "",
       password: "",
       slug: "",
-      email: "",
-      action: "Sign Up"
+      email: ""
     };
+  },
+  computed: {
+    islogInMode() {
+      return this.$store.state.LoginMode;
+    },
+    action() {
+      return this.islogInMode ? "Log In" : "Sign Up";
+    }
   },
   transition: {
     enterActiveClass: "animated bounceInUp",
@@ -77,35 +82,55 @@ export default {
   },
   methods: {
     signUp() {
-      if (this.username && this.email && this.password) {
-        let ref = db.collection("users").doc(this.slug);
-        ref.get().then(doc => {
-          if (doc.exists) {
-            this.userMsg = "This username has been taken";
-          }
-          firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.email, this.password)
-            .then(({ user }) => {
-              console.log(user);
-              ref.set({
-                username: this.username,
-                geolocation: null,
-                user_id: user.uid
-              });
-            })
-            .then(() => {
-              this.$router.push("/");
-            })
-            .catch(err => console.log(err));
-        });
+      if (!this.islogInMode) {
+        if (this.username && this.email && this.password) {
+          let ref = db.collection("users").doc(this.slug);
+          ref.get().then(doc => {
+            if (doc.exists) {
+              this.userMsg = "This username has been taken";
+            }
+            firebase
+              .auth()
+              .createUserWithEmailAndPassword(this.email, this.password)
+              .then(({ user }) => {
+                console.log(user);
+                ref.set({
+                  username: this.username,
+                  geolocation: null,
+                  user_id: user.uid
+                });
+              })
+              .then(() => {
+                this.$router.push("/");
+              })
+              .catch(err => console.log(err));
+          });
+        } else {
+          this.$snackbar.open({
+            message: "You must fill out all fields",
+            type: "is-danger",
+            position: "is-top",
+            actionText: "OK"
+          });
+        }
       } else {
-        this.$snackbar.open({
-          message: "You must fill out all fields",
-          type: "is-danger",
-          position: "is-top",
-          actionText: "OK"
-        });
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(this.email, this.password)
+          .then(({ user }) => {
+            this.$router.push("/");
+            this.$toast.open("You have successfully log in");
+          })
+          .catch(err => {
+            console.log(err);
+            this.$snackbar.open({
+              message: "Email and Password are not correct!",
+              type: "is-danger",
+              position: "is-top",
+              actionText: "OK",
+              indefinite: true
+            });
+          });
       }
     }
   }
