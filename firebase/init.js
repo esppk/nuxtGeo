@@ -10,8 +10,12 @@ var config = {
   storageBucket: "nuxtgeo.appspot.com",
   messagingSenderId: "344944735209"
 };
-firebase.initializeApp(config);
+/* firebase.initializeApp(config); */
 
-const firebaseapp = firebase.initializeApp(config);
-
-export default firebaseapp.firestore();
+const firebaseApp = firebase.initializeApp(config);
+/* FirebaseApp.firestore().settings({
+  timestampsInSnapshots: true
+});
+ */
+const db = firebase.firestore();
+export default db;

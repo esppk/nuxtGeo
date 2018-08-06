@@ -13,6 +13,11 @@
       </div>
       
       <div class="navbar-menu">
+        <div class="navbar-start">
+          <div class="navbar-item">
+            NUXT GEO DEMO
+          </div>
+        </div>
         <div class="navbar-end">
           <div  v-for="(item, idx) in menuItems" :key="idx" class="navbar-item">
             {{item}}
@@ -21,7 +26,6 @@
       </div>
       
     </nav>
-
     <section class="main-content columns">
       <!-- Side bar Navigation -->
       <aside class="column is-2 section">
@@ -42,6 +46,16 @@
       </div>
       
     </section>
+
+    <div class="spacer"></div>
+    <!-- footer -->
+    <footer class="footer has-background-dark">
+      <div class="content has-text-centered has-text-light">
+        <p>
+          Geo Chat App built by Emrick, powered by nuxt.js & buefy
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -58,3 +72,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.spacer {
+  min-height: 65vh;
+}
+</style>

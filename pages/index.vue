@@ -1,43 +1,50 @@
 <template>
     <section class="section">
-        <div class="columns is-mobile">
-            <div v-for="(feature, i) of features" :key="i" class="column">
-                <div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title has-text-grey">
-                            {{ feature.title }}
-                        </p>
-                    </header>
-                    <div class="card-content">
-                        <div class="content has-text-centered">
-                            <b-icon :icon="feature.icon" size="is-large" type="is-primary"/>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <div class="card-footer-item" v-html="feature.content"></div>
-                    </footer>
-                </div>
-            </div>
-        </div>
+        <div class="google-map" id="map" ref="map"></div>
+
     </section>
 </template>
 
 <script>
-import BLogo from '@/components/Logo'
-
 export default {
-  name: 'HomePage',
-  components: {BLogo},
+  name: "GMap",
   data() {
-      return {
-          features: [
-              { icon: 'github-circle', title: 'Free', content: `<span>Open source on <a href="https://github.com/buefy/buefy"> GitHub</a></span>` },
-              { icon: 'cellphone-link', title: 'Responsive', content: `<span><b class="has-text-grey">Every</b> component is responsive</span>` },
-              { icon: 'alert-decagram', title: 'Modern', content: `<span>Built with <a href="https://vuejs.org/">Vue.js</a> and <a href="http://bulma.io/">Bulma</a></span>` },
-              { icon: 'arrange-bring-to-front', title: 'Lightweight', content: `<span>No other internal dependency</span>` }
-          ]
-      }
+    return {
+      lat: 54,
+      lng: -2
+    };
+  },
+  transition: {
+    enterActiveClass: "bounceInUp",
+    leaveActiveClass: "bounceOutDown"
+  },
+  methods: {
+    renderMap() {
+      const map = new google.maps.Map(this.$refs.map, {
+        center: { lat: this.lat, lng: this.lng },
+        zoom: 6,
+        maxZoom: 15,
+        minZoom: 3,
+        streetViewControl: false
+      });
+    }
+  },
+  mounted() {
+    this.$nextTick(this.renderMap);
   }
-}
+};
 </script>
+
+<style scoped>
+.google-map {
+  width: 100%;
+  min-height: 90vh;
+  margin: 0 auto;
+  background: #fff;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>
+
 

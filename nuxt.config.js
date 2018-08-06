@@ -18,6 +18,17 @@ module.exports = {
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/icon?family=Material+Icons"
+      },
+      {
+        rel: "stylesheet",
+        href:
+          "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"
+      }
+    ],
+    script: [
+      {
+        src:
+          "https://maps.googleapis.com/maps/api/js?key=AIzaSyBBKJn2Sq2bhg_s1F95W8D7tvLQBfhlPB4"
       }
     ]
   },
