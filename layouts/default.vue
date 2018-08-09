@@ -77,7 +77,7 @@ export default {
     return {
       items: [
         { title: "Home", icon: "home", to: { name: "index" } },
-        { title: "Inspire", icon: "lightbulb", to: { name: "inspire" } }
+        { title: "About", icon: "lightbulb", to: { name: "about" } }
       ],
       user: null
     };

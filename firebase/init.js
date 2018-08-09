@@ -12,7 +12,8 @@ var config = {
 };
 /* firebase.initializeApp(config); */
 
-const firebaseApp = firebase.initializeApp(config);
+var firebaseApp = firebase.initializeApp(config);
+
 /* FirebaseApp.firestore().settings({
   timestampsInSnapshots: true
 });
