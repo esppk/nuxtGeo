@@ -1,15 +1,21 @@
 <template>
     <section class="section">
         <div class="google-map" id="map" ref="map"></div>
-
+        <div class="chatcontainer">
+          <Chat />
+        </div>      
     </section>
 </template>
 
 <script>
 import firebase from "firebase";
 import db from "@/firebase/init";
+import Chat from "~/components/Chat";
 export default {
   name: "GMap",
+  components: {
+    Chat
+  },
   data() {
     return {
       lat: 54,
@@ -21,10 +27,10 @@ export default {
     leaveActiveClass: "bounceOutDown"
   },
   methods: {
-    renderMap() {
+    renderMap(zoom_ = 6) {
       const map = new google.maps.Map(this.$refs.map, {
         center: { lat: this.lat, lng: this.lng },
-        zoom: 6,
+        zoom: zoom_,
         maxZoom: 15,
         minZoom: 3,
         streetViewControl: false
@@ -36,7 +42,7 @@ export default {
         .then(users => {
           users.docs.forEach(doc => {
             let data = doc.data();
-            if (data.geolocation) {
+            if (data.geolocation && this.$store.state.islogin) {
               let marker = new google.maps.Marker({
                 position: {
                   lat: data.geolocation.lat,
@@ -45,7 +51,12 @@ export default {
                 map
               });
               //add click event to marker
-              marker.addListener("click", () => {});
+              marker.addListener("click", () => {
+                this.$toast.open({
+                  message: "You can now talk to people near you!",
+                  type: "is-success"
+                });
+              });
             }
           });
         });
@@ -54,14 +65,18 @@ export default {
   mounted() {
     /* this.$nextTick(this.renderMap); */
     let user = firebase.auth().currentUser;
-
-    if (navigator.geolocation) {
+    if (!user) {
+      this.$toast.open({
+        message: "Please log in to Chat!",
+        type: "is-danger"
+      });
+      this.renderMap(3);
+    } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
           this.lat = pos.coords.latitude;
           this.lng = pos.coords.longitude;
           this.renderMap();
-
           db
             .collection("users")
             .where("user_id", "==", user.uid)
@@ -93,9 +108,9 @@ export default {
       this.renderMap();
     }
 
-    firebase.auth().onAuthStateChanged(() => {
-      console.log("firebase.auth().currentUser");
-    });
+    /*     firebase.auth().onAuthStateChanged(() => {
+      console.log(firebase.auth().currentUser);
+    }); */
   }
 };
 </script>
@@ -109,6 +124,12 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.chatcontainer {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>
 

@@ -22,7 +22,7 @@
           <div class="navbar-item">
             <a @click="toSignUp" v-if="!islogin">Sign Up</a>
           </div>
-          <div class="navbar-item has-dropdown is-hoverable" v-if="islogin" >
+          <div class="navbar-item has-dropdown is-hoverable" v-if="islogin">
             <a class="navbar-link">Welcome {{ user.email }}</a>
             <div class="navbar-dropdown">
               <a @click="logout" class="navbar-item">Logout</a>
@@ -79,17 +79,22 @@ export default {
         { title: "Home", icon: "home", to: { name: "index" } },
         { title: "Inspire", icon: "lightbulb", to: { name: "inspire" } }
       ],
-      islogin: false,
       user: null
     };
+  },
+  computed: {
+    islogin() {
+      return this.$store.state.islogin;
+    }
   },
   created() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.islogin = true;
         this.user = user;
+        this.$store.commit("loggedin");
       } else {
-        this.user = false;
+        this.user = null;
+        this.$store.commit("loggedout");
       }
     });
   },
